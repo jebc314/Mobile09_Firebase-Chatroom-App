@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "488625646286",
+    "firebase_url": "https://fir-chatroom-app.firebaseio.com",
+    "project_id": "fir-chatroom-app",
+    "storage_bucket": "fir-chatroom-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:488625646286:android:503a30d07c834e6cc2be9f",
+        "android_client_info": {
+          "package_name": "com.cuijeb.firebasechatroomapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "488625646286-0s3lb6ejibeq93jt479atoseda3smj1f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7QN6VT8NFaxGFjhyEXp0b2tL2IK8bFAU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "488625646286-0s3lb6ejibeq93jt479atoseda3smj1f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
