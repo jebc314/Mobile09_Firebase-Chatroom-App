@@ -3,6 +3,7 @@ package com.cuijeb.firebasechatroomapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,18 +18,17 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private FirebaseAuth mAuth;
 
     // different views
-    private TextView statusText;
     private EditText emailText;
     private EditText passwordText;
     private Button signinButton;
     private Button signupButton;
-    private Button signoutButton;
 
     //Tags
     private final String AUTH = "Authentication";
@@ -41,17 +41,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mAuth = FirebaseAuth.getInstance();
 
         // initialize the different views
-        statusText = findViewById(R.id.signinstatusTextView);
         emailText = findViewById(R.id.editTextTextEmailAddress);
         passwordText = findViewById(R.id.editTextTextPassword);
         signinButton = findViewById(R.id.signinButton);
         signupButton = findViewById(R.id.signupButton);
-        signoutButton = findViewById(R.id.signoutButton);
 
         // Add on click listeners
         signinButton.setOnClickListener(this);
         signupButton.setOnClickListener(this);
-        signoutButton.setOnClickListener(this);
     }
 
     @Override
@@ -60,47 +57,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // Check if user is signed in (non-null) and update UI accordingly
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser, false);
-    }
-
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        signOut();
-    }
-
-    private void updateUI(FirebaseUser user, boolean newUser) {
-        if (user != null) {
-            // Do something based on logged in
-            if(newUser) {
-                Toast.makeText(
-                        getApplicationContext(),
-                        "Succesfully signed up!",
-                        Toast.LENGTH_SHORT)
-                        .show();
-            }
+        // if signed in open Logged in activity
+        // for now just open chat
+        if (currentUser != null) {
+            // Firebase Auth ID token
+            /*
+            currentUser.getIdToken(true)
+                    .addOnCompleteListener(this, new OnCompleteListener<GetTokenResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<GetTokenResult> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(
+                                        getApplicationContext(),
+                                        "Sign in successful!",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                                Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+                                Bundle bundle = new Bundle();
+                                bundle.putString("userEmail", currentUser.getEmail());
+                                String idToken = task.getResult().getToken();
+                                bundle.putString("userId", idToken);
+                                intent.putExtra("bundle", bundle);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                Toast.makeText(
+                                        getApplicationContext(),
+                                        "Please log in!",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                            }
+                        }
+                    });
+            */
             Toast.makeText(
                     getApplicationContext(),
-                    "Logged in",
-                    Toast.LENGTH_SHORT)
-                    .show();
-            statusText.setText("Logged in");
-        } else {
-            // Do something based on not logged in
-            if(newUser) {
-                Toast.makeText(
-                        getApplicationContext(),
-                        "Email already in use!",
-                        Toast.LENGTH_SHORT)
-                        .show();
-            }
-            Toast.makeText(
-                    getApplicationContext(),
-                    "Please sign in",
-                    Toast.LENGTH_SHORT)
-                    .show();
-            statusText.setText("Not logged in");
+                    "Sign in successful!",
+                    Toast.LENGTH_SHORT
+            ).show();
+            Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("userEmail", currentUser.getEmail());
+            String uId = currentUser.getUid();
+            bundle.putString("userId", uId);
+            intent.putExtra("bundle", bundle);
+            startActivity(intent);
+            finish();
         }
     }
 
@@ -119,42 +121,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         if (task.isSuccessful()) {
                             Log.d(AUTH, "signIn success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user, false);
+                            // Show Toast
+                            Toast.makeText(
+                                    getApplicationContext(),
+                                    "Sign in successful!",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                            // enter chat activity
+                            Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putString("userEmail", user.getEmail());
+                            String uId = user.getUid();
+                            bundle.putString("userId", uId);
+                            intent.putExtra("bundle", bundle);
+                            startActivity(intent);
+                            finish();
                         } else {
                             // if sign in fails
                             Log.d(AUTH, "signIn failed");
-                            Toast.makeText(getApplicationContext(), "Sign in failed!", Toast.LENGTH_SHORT);
-                            updateUI(null, false);
+                            Toast.makeText(
+                                    getApplicationContext(),
+                                    "Sign in failed!",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                            // show toast
                         }
                     }
                 });
     }
 
     // sign up method
-    private void signUp(String email, String password) {
+    private void signUp() {
         Log.d(AUTH, "SIGN UP");
-        if (!validateForm()) {
-            return;
-        }
-
         // Sign up
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        // if successful
-                        if (task.isSuccessful()) {
-                            Log.d(AUTH, "signUp success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user, true);
-                        } else {
-                            // if sign in fails
-                            Log.d(AUTH, "signUp failed");
-                            Toast.makeText(getApplicationContext(), "Sign up failed!", Toast.LENGTH_SHORT);
-                            updateUI(null, true);
-                        }
-                    }
-                });
+        // Open sign up activity
+        Intent intent = new Intent(this, SignUpActivity.class);
+        startActivity(intent);
     }
 
     // Check if user typed in something for email and password
@@ -177,25 +179,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void signOut() {
-        mAuth.signOut();
-    }
-
     @Override
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.signupButton) {
-            signUp(
-                    emailText.getText().toString(),
-                    passwordText.getText().toString()
-            );
+            signUp();
         } else if (id == R.id.signinButton) {
             signIn(
                     emailText.getText().toString(),
                     passwordText.getText().toString()
             );
-        } else if (id == R.id.signoutButton) {
-            signOut();
         }
     }
 }

@@ -4,4 +4,8 @@
     <string name="sign_up">Sign Up</string>
     <string name="type_email">Type Email</string>
     <string name="type_password">Type Password</string>
+    <string name="make_an_account">Make an Account</string>
+    <string name="remember_to_log_in">Remember to Log In!</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="s_chat">\'s Chat</string>
 </resources>
