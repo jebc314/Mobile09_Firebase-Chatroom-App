@@ -16,10 +16,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener{
 
+    // Firebase
     private FirebaseAuth mAuth;
+    private FirebaseDatabase database;
+    private DatabaseReference usersRef;
 
     // different views
     private EditText emailText;
@@ -35,6 +40,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
         // Initialize the FirebaseAuth instance
         mAuth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
 
         // initialize the different views
         emailText = findViewById(R.id.editTextTextEmailAddress);
@@ -43,36 +49,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
         // Add on click listeners
         signupButton.setOnClickListener(this);
-    }
 
-    // sign in method
-    private void signIn(String email, String password) {
-        Log.d(AUTH, "SIGN IN");
-        if (!validateForm()) {
-            return;
-        }
-
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        // if successful
-                        if (task.isSuccessful()) {
-                            Log.d(AUTH, "signIn success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            // enter chat activity
-                        } else {
-                            // if sign in fails
-                            Log.d(AUTH, "signIn failed");
-                            Toast.makeText(
-                                    getApplicationContext(),
-                                    "Sign in failed!",
-                                    Toast.LENGTH_SHORT
-                            ).show();
-                            // show toast
-                        }
-                    }
-                });
+        // get the data base
+        usersRef = database.getReference("users");
     }
 
     // sign up method
@@ -95,6 +74,12 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                             Toast.makeText(getApplicationContext(),
                                     "Sign Up Successful!",
                                     Toast.LENGTH_SHORT).show();
+                            // Make the user and put in data base
+                            FirebaseUser newUser = mAuth.getCurrentUser();
+                            User user = new User(email.substring(0, email.indexOf("@")), null);
+                            usersRef.child(newUser.getUid()).setValue(user);
+                            // Should i log user out to let them sign in? yes
+                            mAuth.signOut();
                             // Go back to sign in activity
                             finish();
                         } else {

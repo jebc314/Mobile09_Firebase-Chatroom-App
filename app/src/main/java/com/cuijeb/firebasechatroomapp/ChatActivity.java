@@ -1,17 +1,22 @@
 package com.cuijeb.firebasechatroomapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -25,10 +30,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private Bundle bundle;
     private String email;
     private String userId;
+    private User user;
 
     // Views
     private TextView titleTextView;
     private Button signoutButton;
+
+    // Chat Tag
+    private final String TAG = "CHATROOMS";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,16 +54,31 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         email = bundle.getString("userEmail");
         userId = bundle.getString("userId");
 
-        // get the database
-        userRef = database.getReference("users/" + userId);
-        userRef.setValue(userId);
-
         // get views
         titleTextView = findViewById(R.id.titleTextView);
         signoutButton = findViewById(R.id.signoutButton);
 
         // intial setup
-        titleTextView.setText(userId.substring(0, 10) + titleTextView.getText().toString());
+
+        // get the database
+        userRef = database.getReference("users/" + userId);
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Get user from database
+                user = snapshot.getValue(User.class);
+                Log.d(TAG, "READ USER");
+                // Set chat name to user
+                titleTextView.setText(user.userName + "\'s Chat");
+                signoutButton.setEnabled(true);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d(TAG, "loadPost:onCancelled", error.toException());
+            }
+        });
+
         signoutButton.setOnClickListener(this);
     }
 
