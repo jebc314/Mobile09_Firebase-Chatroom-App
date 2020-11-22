@@ -1,13 +1,16 @@
 package com.cuijeb.firebasechatroomapp;
 
+import java.util.HashMap;
+
 public class User {
+    public String userId;
     public String userName;
-    public String[] groups;
+    public HashMap<String, Boolean> chats;
 
     public User() {}
 
-    public User(String userName, String[] groups) {
+    public User(String userName, HashMap<String, Boolean> chats) {
         this.userName = userName;
-        this.groups = groups;
+        this.chats = chats;
     }
 }
