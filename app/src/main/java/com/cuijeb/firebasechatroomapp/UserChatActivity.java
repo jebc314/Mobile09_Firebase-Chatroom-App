@@ -167,8 +167,11 @@ public class UserChatActivity extends AppCompatActivity implements View.OnClickL
             messagesLayout.addView(spaceTextView);
 
             // Align right if this user sent the message other wise to the right
-            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            String uId = firebaseUser.getUid();
+            // FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            // String uId = firebaseUser.getUid();
+
+            // Get user Id directly from user object
+            String uId = user.userId;
             if (message.userId.equals(uId)){
                 infoTextView.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
                 messageTextView.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
@@ -190,9 +193,10 @@ public class UserChatActivity extends AppCompatActivity implements View.OnClickL
             String tag = "m"+messages.messages.size();
             HashMap<String, Object> hashMap = new HashMap<>();
             hashMap.put("message", message);
-            // Change this using that users' read is now public
-            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            String uId = firebaseUser.getUid();
+            // // Change this using that users' read is now public
+            // FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            // String uId = firebaseUser.getUid();
+            String uId = user.userId;
             hashMap.put("userId", uId);
             hashMap.put("userName", user.userName);
             long unixSeconds = System.currentTimeMillis() / 1000L;

@@ -15,7 +15,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -24,7 +26,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     // Firebase
     private FirebaseAuth mAuth;
     private FirebaseDatabase database;
-    private DatabaseReference usersRef;
+    // private DatabaseReference usersRef;
 
     // different views
     private EditText emailText;
@@ -51,7 +53,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         signupButton.setOnClickListener(this);
 
         // get the data base
-        usersRef = database.getReference("users");
+        // usersRef = database.getReference("users");
     }
 
     // sign up method
@@ -76,16 +78,20 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                                     Toast.LENGTH_SHORT).show();
                             // Make the user and put in data base
                             FirebaseUser newUser = mAuth.getCurrentUser();
-                            User user = new User(email.substring(0, email.indexOf("@")), null);
-                            usersRef.child(newUser.getUid()).setValue(user);
+                            User user = new User(newUser.getUid(), email.substring(0, email.indexOf("@")), null);
+                            DatabaseReference databaseReference = database.getReference();
+                            databaseReference.child("users/" + user.userId + "/userId").setValue(user.userId);
+                            databaseReference.child("users/" + user.userId + "/userName").setValue(user.userName);
                             // Should i log user out to let them sign in? yes
                             mAuth.signOut();
                             // Go back to sign in activity
                             finish();
                         } else {
                             // if sign in fails
+                            // Log debug
                             // show toast
-                            Log.d(AUTH, "signUp failed");
+                            FirebaseAuthException e = (FirebaseAuthException )task.getException();
+                            Log.d(AUTH, "signUp failed", e);
                             Toast.makeText(
                                     getApplicationContext(),
                                     "Sign Up failed! Email might already be in use",
@@ -107,6 +113,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
         if (TextUtils.isEmpty(passwordText.getText().toString())) {
             passwordText.setError("Required!");
+            return false;
+        }
+        // If password too short
+        else if (passwordText.getText().toString().length() < 6) {
+            passwordText.setError("Password too short!");
             return false;
         } else {
             emailText.setError(null);

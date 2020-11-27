@@ -9,7 +9,8 @@ public class User {
 
     public User() {}
 
-    public User(String userName, HashMap<String, Boolean> chats) {
+    public User(String userId, String userName, HashMap<String, Boolean> chats) {
+        this.userId = userId;
         this.userName = userName;
         this.chats = chats;
     }

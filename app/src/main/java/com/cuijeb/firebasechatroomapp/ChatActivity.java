@@ -8,6 +8,7 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -232,6 +233,27 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             // constraint layout's onclicklistener
             constraintLayout.setOnClickListener(this);
         }
+        // Add the addChat button
+        Button addChat = new Button(this);
+        addChat.setId(View.generateViewId());
+        addChat.setText("Add Chat");
+        addChat.setTextSize(25);
+        LinearLayout.LayoutParams llpAddChat = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        addChat.setLayoutParams(llpAddChat);
+        addChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), AddChatActivity.class);
+                Gson gson = new Gson();
+                String userJson = gson.toJson(user);
+                intent.putExtra("user", userJson);
+                startActivity(intent);
+            }
+        });
+
+        chatsLayout.addView(addChat);
     }
 
     @Override
