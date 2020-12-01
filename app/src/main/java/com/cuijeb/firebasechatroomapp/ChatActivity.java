@@ -110,8 +110,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     public void updateChats(User user) {
         // if chats is empty then just clear the array
+        // Also display to add the add chat button
         if (user.chats == null) {
             chats.clear();
+            displayChats();
         // Otherwise
         } else {
             // Go through and remove the ones in ArrayList
